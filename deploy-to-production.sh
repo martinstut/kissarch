@@ -40,7 +40,7 @@ for FILE in $CRON_DIFF_FILES ; do
 done
 
 # send executables:
-EXE_FILES="kissarch-fixate-1 kissarch-fixate-all"
+EXE_FILES="kissarch-fixate-all kissarch-fixate-1 kissarch-immutable-1-file"
 for FILE in $EXE_FILES ; do
     # shellcheck disable=SC2086
     rsync $RSYNC_OPTS "$SOURCE_EXE_PATH/$FILE" $TARGET_USER@$TARGET_SERVER:$TARGET_EXE_PATH/

@@ -5,6 +5,7 @@ set -x
 set -u
 set -e
 
+# shellcheck disable=SC1091
 . /etc/kissarch/paths.conf
 
 

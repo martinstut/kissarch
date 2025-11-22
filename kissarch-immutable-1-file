@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+# /usr/local/sbin/kissarch-immutable-1-file
+# check 1 file whether it has the immutable flag, set the flag if not
+# usually called from kissarch-fixate-1
+set +x # too verbose; would list all files.
+set -u
+set -e
+
+if [ ! -f "$1" ] ; then
+   echo "$1 is not a file."
+   echo "example use:"
+   echo "kissarch-immutable-1-file archive/file.pdf"
+   exit 1
+fi
+
+FILENAME="$1"
+LSATTR_OUTPUT=$(/usr/bin/lsattr "$FILENAME" )
+ATTRIBUTE_LIST=${LSATTR_OUTPUT%% *}
+case $ATTRIBUTE_LIST in
+   (*i*) exit ;; # file has the immutable attribute, nothing to do here
+   (*) ;;
+esac
+echo "$FILENAME does not have the immutable attribute. Setting it now."
+set -x
+/usr/bin/chattr +i "$FILENAME"

@@ -24,4 +24,5 @@ echo "kissarch-fixate-1 is now about to process directory $KISSARCH_SUBARCHIVE"
 # set all files to chmod 0440 (read-only, potentially needing to remove the immutable attribute)
 /usr/bin/find "$KISSARCH_SUBARCHIVE" -type f -not -perm 0440 -exec /usr/bin/chattr -i {} \; -exec /usr/bin/chmod -c 0440 {} \;
 # set all files to immutable
-/usr/bin/find "$KISSARCH_SUBARCHIVE" -type f -exec /usr/bin/chattr +i {} \;
+/usr/bin/find "$KISSARCH_SUBARCHIVE" -type f -exec /usr/local/sbin/kissarch-immutable-1-file {} \;
+set -x # kissarch-immutable-1-file does clear the x setting to avoid spamming the log with many filenames that don't need treatment
