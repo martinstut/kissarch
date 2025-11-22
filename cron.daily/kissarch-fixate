@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+# /etc/cron.daily/kissarch-fixate
+# Martin Stut 2024-12-31 18:35
+/usr/local/sbin/kissarch-fixate-all

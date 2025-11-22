@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+# /usr/local/sbin/kissarch-fixate-all
+# to be run daily or so to fixate (make immutable) the contents of all directories mentioned in $KISSARCH_ARCHIVEBASE/$KISSARCH_ARCHIVELIST
+set -x
+set -u
+set -e
+
+. /etc/kissarch/paths.conf
+
+
+for KISSARCH_SUBARCHIVEPART in "${KISSARCH_ARCHIVELIST[@]}"; do
+    KISSARCH_SUBARCHIVE="${KISSARCH_ARCHIVEBASE}${KISSARCH_SUBARCHIVEPART}"
+    if [ -d "${KISSARCH_SUBARCHIVE}" ] ; then
+	echo about to process subarchive "$KISSARCH_SUBARCHIVE"
+	/usr/local/sbin/kissarch-fixate-1 "$KISSARCH_SUBARCHIVE"
+	echo finished processing subarchive "$KISSARCH_SUBARCHIVE"
+   else
+	echo "$KISSARCH_SUBARCHIVE" is not a directory
+   fi
+done
