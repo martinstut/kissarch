@@ -1,0 +1,22 @@
+# /etc/kissarch/paths.conf
+# Shell fragment, to be sourced by various scripts
+# Task: set some variables to make generic programs use local data:
+#  KISSARCH_ARCHIVEBASE : string with base directory name, with trailing slash
+#  KISSARCH_ARCHIVELIST : Array of strings, one element for each archive: path relative to KISSRACH_ARCHIVEBASE , no trailing slash
+# test with: bash -x paths.conf
+
+# base directory, *with* trailing slash, so "/" becomes an option
+# replace with your local configuration!!!
+KISSARCH_ARCHIVEBASE=/home/martin/nc/homecloud/Documents/projekte/kissarch/test-archive-old/
+
+# delete Array of subarchives, to avoid double entries from previous runs
+unset KISSARCH_ARCHIVELIST
+declare -a KISSARCH_ARCHIVELIST
+for company in 'company1' 'company2' ; do
+	for year in 2025 2026 ; do
+		candidate="${company}/${year}"
+		# only set to show it in the debug output and how to combine
+		fullcandidate="${KISSARCH_ARCHIVEBASE}${candidate}"
+		KISSARCH_ARCHIVELIST+=("$candidate")
+	done
+done

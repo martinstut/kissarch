@@ -9,12 +9,22 @@ TARGET_USER=root
 # no trailing slashes in paths:
 SOURCE_EXE_PATH=.
 TARGET_EXE_PATH=/usr/local/sbin
+SOURCE_CONF_PATH=./etc-kissarch
+TARGET_CONF_PATH=/etc/kissarch
 SOURCE_CRON_FIXATE_PATH=./cron.daily
 TARGET_CRON_FIXATE_PATH=/etc/cron.daily
 SOURCE_CRON_DIFF_PATH=./cron.monthly
 TARGET_CRON_DIFF_PATH=/etc/cron.monthly
 
 RSYNC_OPTS="-avP"
+
+# send configuration for fixate:
+CONF_FILES="paths.conf"
+for FILE in $CONF_FILES ; do
+    # shellcheck disable=SC2086
+    rsync $RSYNC_OPTS "$SOURCE_CONF_PATH/$FILE" $TARGET_USER@$TARGET_SERVER:$TARGET_CONF_PATH/
+done
+
 # send cron for fixate:
 CRON_FIXATE_FILES="kissarch-fixate"
 for FILE in $CRON_FIXATE_FILES ; do
