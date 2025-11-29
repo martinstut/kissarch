@@ -1,0 +1,53 @@
+#!/usr/bin/env bash
+# /usr/local/sbin/kissarch-digest-1
+# create the digest list of 1 subarchive of Keep It Simple Stupid ARCHive
+#  to stdout, not sorted
+# usually called from kissarch-digest-all
+# Parameter 1:
+#set -x # set -x may be too noisy
+set -e
+
+if [ ! -d "$1" ] ; then
+   {
+      echo "kissarch-digest-1: $1 is not a directory."
+      echo "example use:"
+      echo "kissarch-digest-1 /home/user/fibuarchiv '.+\.pdf'"
+   } >&2
+   exit 1
+fi
+
+FILENAMEREGEX=".+"
+if [ -z "$2" ] ; then
+    {
+        echo "kissarch-digest-1: optional Parameter 2 (filename filter regex) not present. Listing all files."
+        echo "example usage:"
+        echo "kissarch-digest-1 /home/user/fibuarchiv '.+\.pdf'"
+    } >&2
+else
+    FILENAMEREGEX="$2"
+fi
+
+# read configuration
+# shellcheck disable=SC1091
+. /etc/kissarch/digest.conf
+
+# set -u only here to permit empty $2
+set -u
+KISSARCH_SUBARCHIVE="$1"
+if [ ${#KISSARCH_SUBARCHIVE} -lt 30 ] ; then
+   {
+      echo "$KISSARCH_SUBARCHIVE has length ${#KISSARCH_SUBARCHIVE} which is too short a directory name."
+      echo "refusing to operate to avoid big trouble."
+   } >&2
+   exit 1
+fi
+
+# Decision 2025-11-29 11:25: no header line. Instead make the algorithm part of the file name.
+## header line. Must begin with a space to ensure it stays a header even when sorted
+#echo " digest-algorithm $KISSARCH_DIGEST_ALGORITHM"
+
+# walk through all files of the archive
+# change to the archive directory to avoid dependency on absolute path
+pushd "$KISSARCH_SUBARCHIVE" >&2 || exit 1
+/usr/bin/find . -type f -regex "$FILENAMEREGEX" -exec /usr/local/sbin/kissarch-digest-file {} \;
+popd >&2 || exit 1

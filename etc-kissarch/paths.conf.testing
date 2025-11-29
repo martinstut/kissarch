@@ -14,7 +14,7 @@ unset KISSARCH_ARCHIVELIST
 declare -a KISSARCH_ARCHIVELIST
 for company in 'company1' 'company2' ; do
 	for year in 2025 2026 ; do
-		candidate="${company}/${year}"
+		candidate="${company}/${year}/"
 		# only set to show it in the debug output and how to combine
 		fullcandidate="${KISSARCH_ARCHIVEBASE}${candidate}"
 		KISSARCH_ARCHIVELIST+=("$candidate")

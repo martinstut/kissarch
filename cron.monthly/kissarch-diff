@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
 # /etc/cron.daily/kissarch-diff
 # Martin Stut 2024-12-31 18:35
-# doing nothing for now, becuase development did not get far enough
+# doing nothing for now, because development did not get far enough
 #/usr/local/sbin/kissarch-diff-all

@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+# /usr/local/sbin/kissarch-digest-file
+# create the digest line for 1 file of Keep It Simple Stupid ARCHive
+# usually called from kissarch-digest-archive
+# Must have extactly 1 parameter: the name of the file to be digested
+
+# set -x is only useful for debugging, too noisy for production
+#set -x
+set -u
+set -e
+
+# read configuration
+# shellcheck disable=SC1091
+. /etc/kissarch/digest.conf
+
+if [ ! -f "$1" ] ; then
+   echo "$1 is not a file."
+   echo "example use:"
+   echo "kissarch-digest-file filename"
+   echo "You'll need quotes around the file name to escape spaces etc."
+   exit 1
+fi
+
+KISSARCH_FILENAME="$1"
+KISSARCH_DIGEST=$(/usr/bin/openssl dgst -"$KISSARCH_DIGEST_ALGORITHM" -hex "$KISSARCH_FILENAME" 2>&1 | /usr/bin/awk '{ print $NF }')
+/usr/bin/printf "%s\t%s\n" "$KISSARCH_DIGEST" "$KISSARCH_FILENAME"

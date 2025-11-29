@@ -13,7 +13,7 @@ Keep It Simple Stupid ARCHive for data that needs proof of non-change, e.g. inco
 
 Work in Progress. Known to be incomplete.
 
-It may ruin your data and your day - it did ruin mine twice.
+It may ruin your data and your day - it did ruin mine twice during development.
 
 
 ## Prepare Test environment on the development machine (one time):
@@ -25,9 +25,13 @@ adjust `/etc/kissarch/paths.conf.testing` to your testing scenario
 ```bash
 sudo mkdir -p /etc/kissarch
 sudo ln -s /home/martin/nc/homecloud/Documents/projekte/kissarch/etc-kissarch/paths.conf.testing /etc/kissarch/paths.conf
+sudo ln -s /home/martin/nc/homecloud/Documents/projekte/kissarch/etc-kissarch/digest.conf /etc/kissarch/digest.conf
 sudo ln -s /home/martin/nc/homecloud/Documents/projekte/kissarch/kissarch-immutable-1-file /usr/local/sbin/
 sudo ln -s /home/martin/nc/homecloud/Documents/projekte/kissarch/kissarch-fixate-1 /usr/local/sbin/
 sudo ln -s /home/martin/nc/homecloud/Documents/projekte/kissarch/kissarch-fixate-all /usr/local/sbin/
+sudo ln -s /home/martin/nc/homecloud/Documents/projekte/kissarch/kissarch-digest-file /usr/local/sbin/
+sudo ln -s /home/martin/nc/homecloud/Documents/projekte/kissarch/kissarch-digest-1 /usr/local/sbin/
+sudo ln -s /home/martin/nc/homecloud/Documents/projekte/kissarch/kissarch-digest-all /usr/local/sbin/
 ```
 
 Do your test runs to test-archive-old. That one is filles with (dommy) data.

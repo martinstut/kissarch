@@ -1,0 +1,57 @@
+#!/usr/bin/env bash
+# /usr/local/sbin/kissarch-digest-all
+# to be run monthly or so to create a digest of each file in each subarchive (directory) mentioned in $KISSARCH_ARCHIVEBASE/$KISSARCH_ARCHIVELIST
+set -x
+set -u
+set -e
+
+# shellcheck disable=SC1091
+. /etc/kissarch/paths.conf
+# shellcheck disable=SC1091
+. /etc/kissarch/digest.conf
+
+KISSARCH_TIMESTAMP=$(/usr/bin/date +%Y-%m-%d_%H%M%S) # filename component for the current time, e.g. 2025-11-29_164753
+/usr/bin/mkdir -p "$KISSARCH_TMP_DIRECTORY"
+
+# prepare Array of digest filenames (full paths)
+unset KISSARCH_DIGESTLIST
+declare -a KISSARCH_DIGESTLIST
+
+# calculate and store digest for each (sub)archive:
+for KISSARCH_SUBARCHIVEPART in "${KISSARCH_ARCHIVELIST[@]}"; do
+   KISSARCH_SUBARCHIVE="${KISSARCH_ARCHIVEBASE}${KISSARCH_SUBARCHIVEPART}"
+   if [ -d "${KISSARCH_SUBARCHIVE}" ] ; then
+      KISSARCH_DIGEST_FILENAME=$KISSARCH_DIGEST_FILENAME_PREFIX$KISSARCH_TIMESTAMP$KISSARCH_DIGEST_FILENAME_SUFFIX
+      KISSARCH_DIGEST_TMPPATHNAME=$KISSARCH_TMP_DIRECTORY/$KISSARCH_DIGEST_FILENAME
+      /usr/local/sbin/kissarch-digest-1 "$KISSARCH_SUBARCHIVE" | /usr/bin/sort > "$KISSARCH_DIGEST_TMPPATHNAME"
+      # move digest into permanent location
+      KISSARCH_DIGEST_DIRECTORY="$KISSARCH_SUBARCHIVE$KISSARCH_META_DIRECTORY" # SUBARCHIVE has trailing slash, Metadirectory has not.
+      KISSARCH_DIGEST_FULLPATHNAME=$KISSARCH_DIGEST_DIRECTORY/$KISSARCH_DIGEST_FILENAME
+      /usr/bin/mkdir -p "$KISSARCH_DIGEST_DIRECTORY"
+      /usr/bin/mv "$KISSARCH_DIGEST_TMPPATHNAME" "$KISSARCH_DIGEST_FULLPATHNAME"
+      KISSARCH_DIGESTLIST+=("$KISSARCH_DIGEST_FULLPATHNAME")
+   else
+      echo "$KISSARCH_SUBARCHIVE is not a directory" >&2
+      # do not exit here, because it is considered acceptable for an archive to not exist (yet)
+   fi
+done
+
+# create list of digests
+KISSARCH_DIGESTLIST_FILENAME=$KISSARCH_DIGESTLIST_PREFIX$KISSARCH_TIMESTAMP$KISSARCH_DIGEST_FILENAME_SUFFIX
+KISSARCH_DIGESTLIST_TMPUNSORTEDPATHNAME=$KISSARCH_TMP_DIRECTORY/$KISSARCH_DIGESTLIST_FILENAME.unsorted
+KISSARCH_DIGESTLIST_TMPPATHNAME=$KISSARCH_TMP_DIRECTORY/$KISSARCH_DIGESTLIST_FILENAME
+# walk through digests
+for KISSARCH_DIGESTLISTPART in "${KISSARCH_DIGESTLIST[@]}"; do
+   KISSARCH_DIGEST_DIGEST=$(/usr/bin/openssl dgst -"$KISSARCH_DIGEST_ALGORITHM" -hex "$KISSARCH_DIGESTLISTPART" 2>&1 | /usr/bin/awk '{ print $NF }')
+   /usr/bin/printf "%s\t%s\n" "$KISSARCH_DIGEST_DIGEST" "$KISSARCH_DIGESTLISTPART" >> "$KISSARCH_DIGESTLIST_TMPUNSORTEDPATHNAME"
+done
+
+# sort the list of archives
+/usr/bin/sort "$KISSARCH_DIGESTLIST_TMPUNSORTEDPATHNAME" > "$KISSARCH_DIGESTLIST_TMPPATHNAME"
+# copy the list of archives into each archive's meta directory
+for KISSARCH_SUBARCHIVEPART in "${KISSARCH_ARCHIVELIST[@]}"; do
+   KISSARCH_DIGEST_DIRECTORY="${KISSARCH_ARCHIVEBASE}${KISSARCH_SUBARCHIVEPART}${KISSARCH_META_DIRECTORY}" # SUBARCHIVE has trailing slash, Metadirectory has not.
+   /usr/bin/cp -a "$KISSARCH_DIGESTLIST_TMPPATHNAME" "$KISSARCH_DIGEST_DIRECTORY"
+done
+# clean up behind us
+/usr/bin/rm "$KISSARCH_DIGESTLIST_TMPUNSORTEDPATHNAME" "$KISSARCH_DIGESTLIST_TMPPATHNAME" 

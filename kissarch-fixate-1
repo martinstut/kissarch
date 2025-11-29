@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # /usr/local/sbin/kissarch-fixate-1
-# fixate 1 subarchive of Poor Man's DMS
+# fixate 1 subarchive of Keep It Simple Stupid ARCHive
 # usually called from kissarch-fixate-all
 set -x
 set -u

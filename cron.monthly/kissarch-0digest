@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+# /etc/cron.daily/kissarch-0digest
+# needs to be 0-digest to run before diff
+# Martin Stut 2025-11-29 12:40
+/usr/local/sbin/kissarch-digest-all
