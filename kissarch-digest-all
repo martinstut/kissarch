@@ -49,9 +49,15 @@ done
 /usr/bin/sort "$KISSARCH_DIGESTLIST_TMPUNSORTEDPATHNAME" > "$KISSARCH_DIGESTLIST_TMPPATHNAME"
 # copy the list of archives into each archive's meta directory
 for KISSARCH_SUBARCHIVEPART in "${KISSARCH_ARCHIVELIST[@]}"; do
-   KISSARCH_DIGEST_DIRECTORY="${KISSARCH_ARCHIVEBASE}${KISSARCH_SUBARCHIVEPART}${KISSARCH_META_DIRECTORY}" # SUBARCHIVE has trailing slash, Metadirectory has not.
-   /usr/bin/mkdir -p "$KISSARCH_DIGEST_DIRECTORY"
-   /usr/bin/cp -a "$KISSARCH_DIGESTLIST_TMPPATHNAME" "$KISSARCH_DIGEST_DIRECTORY"
+   KISSARCH_SUBARCHIVE="${KISSARCH_ARCHIVEBASE}${KISSARCH_SUBARCHIVEPART}"
+   if [ -d "${KISSARCH_SUBARCHIVE}" ] ; then
+      KISSARCH_DIGEST_DIRECTORY="${KISSARCH_SUBARCHIVE}${KISSARCH_META_DIRECTORY}" # SUBARCHIVE has trailing slash, Metadirectory has not.
+      /usr/bin/mkdir -p "$KISSARCH_DIGEST_DIRECTORY"
+      /usr/bin/cp -a "$KISSARCH_DIGESTLIST_TMPPATHNAME" "$KISSARCH_DIGEST_DIRECTORY"
+   else
+      echo "$KISSARCH_SUBARCHIVE is not a directory" >&2
+      # do not exit here, because it is considered acceptable for an archive to not exist (yet)
+   fi
 done
 # clean up behind us
 /usr/bin/rm "$KISSARCH_DIGESTLIST_TMPUNSORTEDPATHNAME" "$KISSARCH_DIGESTLIST_TMPPATHNAME" 
